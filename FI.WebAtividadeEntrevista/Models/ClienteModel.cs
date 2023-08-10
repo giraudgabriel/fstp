@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace WebAtividadeEntrevista.Models
@@ -66,6 +67,13 @@ namespace WebAtividadeEntrevista.Models
         /// Telefone
         /// </summary>
         public string Telefone { get; set; }
+
+        /// <summary>
+        /// CPF
+        /// </summary>
+        [Required]
+        [CpfValidation(ErrorMessage = "Digite um CPF válido!")]
+        public string CPF { get; set; }
 
     }    
 }

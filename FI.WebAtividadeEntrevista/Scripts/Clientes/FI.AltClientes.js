@@ -1,7 +1,4 @@
 ﻿$(document).ready(function () {
-     //Mascara cpf para o campo CPF
-     $("#formCadastro #CPF").mask("999.999.999-99");
-    
     if (obj) {
         $('#formCadastro #Nome').val(obj.Nome);
         $('#formCadastro #CEP').val(obj.CEP);
@@ -13,20 +10,8 @@
         $('#formCadastro #Logradouro').val(obj.Logradouro);
         $('#formCadastro #Telefone').val(obj.Telefone);
         $('#formCadastro #CPF').val(obj.CPF);
+        $('#formCadastro #CPF').attr('readonly', true);
     }
-
-
-    //Validação do campo CPF
-    $("#formCadastro #CPF").blur(function () {
-        const cpf = $("#CPF").val();
-        const filtro = /^\d{3}.\d{3}.\d{3}-\d{2}$/i;
-        if (!filtro.test(cpf)) {
-            alert("CPF inválido. Tente novamente.");
-            $("#CPF").focus();
-            return false;
-        }
-    });
-
 
     $('#formCadastro').submit(function (e) {
         e.preventDefault();

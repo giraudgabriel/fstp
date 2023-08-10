@@ -1,5 +1,38 @@
 ﻿
 $(document).ready(function () {
+    //Mascara cpf para o campo CPF
+    $("#formCadastro #CPF").mask("999.999.999-99");
+
+    //Mascara telefone para o campo Telefone
+    $("#formCadastro #Telefone").mask("(99) 99999-9999");
+
+    //Mascara CEP para o campo CEP
+    $("#formCadastro #CEP").mask("99999-999");
+
+    //Validação do campo CEP
+    $("#formCadastro #CEP").blur(function () {
+        const cep = $("#CEP").val();
+        const filtro = /^\d{5}-\d{3}$/i;
+        if (!filtro.test(cep)) {
+            alert("CEP inválido!");
+            $("#CEP").focus();
+            $("#CEP").val("");
+            return false;
+        }
+
+        $.getJSON("https://viacep.com.br/ws/" + cep + "/json/", function (dados) {
+            if (!("erro" in dados)) {
+                $("#formCadastro #Logradouro").val(dados.logradouro);
+                $("#formCadastro #Cidade").val(dados.localidade);
+                $("#formCadastro #Estado").val(dados.uf);
+            }
+            else {
+                alert("CEP não encontrado.");
+                $("#CEP").val("");
+            }
+        });
+    });
+
     $('#formCadastro').submit(function (e) {
         e.preventDefault();
         $.ajax({
@@ -14,7 +47,8 @@ $(document).ready(function () {
                 "Estado": $(this).find("#Estado").val(),
                 "Cidade": $(this).find("#Cidade").val(),
                 "Logradouro": $(this).find("#Logradouro").val(),
-                "Telefone": $(this).find("#Telefone").val()
+                "Telefone": $(this).find("#Telefone").val(),
+                "CPF": $(this).find("#CPF").val(),
             },
             error:
             function (r) {
