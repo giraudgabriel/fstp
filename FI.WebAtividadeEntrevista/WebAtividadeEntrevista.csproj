@@ -278,6 +278,7 @@
     <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\jquery.mask.1.14.0.js" />
     <Content Include="Scripts\jtable\extensions\jquery.jtable.aspnetpagemethods.js" />
     <Content Include="Scripts\jtable\extensions\jquery.jtable.aspnetpagemethods.min.js" />
     <Content Include="Scripts\jtable\external\json2.js" />

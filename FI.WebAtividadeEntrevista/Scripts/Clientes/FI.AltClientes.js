@@ -1,5 +1,7 @@
-﻿
-$(document).ready(function () {
+﻿$(document).ready(function () {
+     //Mascara cpf para o campo CPF
+     $("#formCadastro #CPF").mask("999.999.999-99");
+    
     if (obj) {
         $('#formCadastro #Nome').val(obj.Nome);
         $('#formCadastro #CEP').val(obj.CEP);
@@ -10,7 +12,21 @@ $(document).ready(function () {
         $('#formCadastro #Cidade').val(obj.Cidade);
         $('#formCadastro #Logradouro').val(obj.Logradouro);
         $('#formCadastro #Telefone').val(obj.Telefone);
+        $('#formCadastro #CPF').val(obj.CPF);
     }
+
+
+    //Validação do campo CPF
+    $("#formCadastro #CPF").blur(function () {
+        const cpf = $("#CPF").val();
+        const filtro = /^\d{3}.\d{3}.\d{3}-\d{2}$/i;
+        if (!filtro.test(cpf)) {
+            alert("CPF inválido. Tente novamente.");
+            $("#CPF").focus();
+            return false;
+        }
+    });
+
 
     $('#formCadastro').submit(function (e) {
         e.preventDefault();
@@ -27,7 +43,8 @@ $(document).ready(function () {
                 "Estado": $(this).find("#Estado").val(),
                 "Cidade": $(this).find("#Cidade").val(),
                 "Logradouro": $(this).find("#Logradouro").val(),
-                "Telefone": $(this).find("#Telefone").val()
+                "Telefone": $(this).find("#Telefone").val(),
+                "CPF": $(this).find("#CPF").val()
             },
             error:
             function (r) {
