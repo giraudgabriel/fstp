@@ -24,6 +24,7 @@ const ModalBeneficiario = {
   Id: "#modalBeneficiarios",
   Nome: "#BeneficiarioNome",
   CPF: "#BeneficiarioCPF",
+  BtnAlterar: "#btnAlterarBeneficiario",
   BtnAdicionar: "#btnAddBeneficiario",
   BtnRemover: "#btnRemoveBeneficiario",
   Grid: "#gridBeneficiarios",
@@ -105,7 +106,8 @@ $(document).ready(function () {
       method: "POST",
       data,
       error: function (r) {
-        if (r.status == 400 || r.status == 409) ModalDialog("Ocorreu um erro", r.responseJSON);
+        if (r.status == 400 || r.status == 409)
+          ModalDialog("Ocorreu um erro", r.responseJSON);
         else if (r.status == 500)
           ModalDialog(
             "Ocorreu um erro",
@@ -194,40 +196,90 @@ function ModalDialog(titulo, texto) {
 async function ModalBeneficiarios(titulo, beneficiarios) {
   function onRemoveBeneficiario(e) {
     e.preventDefault();
-    const cpf = $(this).attr("data");
+    const id = $(this).attr("data");
 
-    if (!cpf) return;
+    if (!id) return;
 
-    if (!confirm(`Deseja remover o beneficiário de CPF: ${cpf} ?`)) return;
+    const beneficiario = beneficiarios.find((b) => b.Id == id);
 
-    removerBeneficiario(cpf);
+    if (!beneficiario) return;
+
+    if (!confirm(`Deseja remover o beneficiário de CPF: ${beneficiario.CPF} ?`)) return;
+
+    removerBeneficiario(id);
     $(this).closest("tr").remove();
   }
 
-  function removerBeneficiario(cpf) {
-    const index = beneficiarios.findIndex((b) => b.CPF == cpf);
+  function limparFormulario() {
+    ModalBeneficiario.el(ModalBeneficiario.CPF).val("");
+    ModalBeneficiario.el(ModalBeneficiario.Nome).val("");
+  }
+
+  function onUpdateBeneficiario(e) {
+    e.preventDefault();
+    const id = ModalBeneficiario.el(ModalBeneficiario.BtnAdicionar).attr(
+      "data"
+    );
+
+    if (!id) return;
+
+    const beneficiario = beneficiarios.find((b) => b.Id == id);
+
+    if (!beneficiario) return;
+
+    const data = getFormData();
+
+    if (!data) return;
+    removerBeneficiario(id);
+
+    ModalBeneficiario.el(`#beneficiario-${id}`)?.remove();
+
+    beneficiarios.push({
+      Id: id,
+      CPF: data.CPF,
+      Nome: data.Nome,
+    });
+    adicionaBeneficiario(id, data.CPF, data.Nome);
+
+    $(ModalBeneficiario.Id).off("click", ModalBeneficiario.BtnAdicionar);
+    $(ModalBeneficiario.Id).on(
+      "click",
+      ModalBeneficiario.BtnAdicionar,
+      onAddBeneficiario.bind(this)
+    );
+
+    ModalBeneficiario.el(ModalBeneficiario.BtnAdicionar).text("Incluir");
+    limparFormulario();
+  }
+
+  function onEditBeneficiario(e) {
+    e.preventDefault();
+    const id = $(this).attr("data");
+
+    if (!id) return;
+
+    const beneficiarioIndex = beneficiarios.findIndex((b) => b.Id == id);
+    if (beneficiarioIndex == -1) return;
+
+    const beneficiario = beneficiarios[beneficiarioIndex];
+    ModalBeneficiario.el(ModalBeneficiario.CPF).val(beneficiario.CPF);
+    ModalBeneficiario.el(ModalBeneficiario.Nome).val(beneficiario.Nome);
+    ModalBeneficiario.el(ModalBeneficiario.BtnAdicionar).attr("data", id);
+    ModalBeneficiario.el(ModalBeneficiario.BtnAdicionar).text("Alterar");
+    $(ModalBeneficiario.Id).off("click", ModalBeneficiario.BtnAdicionar);
+    $(ModalBeneficiario.Id).on(
+      "click",
+      ModalBeneficiario.BtnAdicionar,
+      onUpdateBeneficiario
+    );
+  }
+
+  function removerBeneficiario(id) {
+    const index = beneficiarios.findIndex((b) => b.Id == id);
     if (index >= 0) beneficiarios.splice(index, 1);
   }
 
-  function adicionaBeneficiario(cpf, nome) {
-    const linha = `
-            <tr id="beneficiario-${cpf}">
-                <td>${cpf}</td>
-                <td>${nome}</td>
-                <td>
-                    <button type="button" class="btn btn-danger btn-sm" data="${cpf}" id="btnRemoveBeneficiario">
-                       <span class="glyphicon glyphicon-trash"></span>
-                    </button>
-                </td>
-            </tr>
-        `;
-
-    ModalBeneficiario.el(ModalBeneficiario.Grid + " tbody").append(linha);
-  }
-
-  function onAddBeneficiario(e) {
-    e.preventDefault();
-
+  const getFormData = () => {
     const cpf = ModalBeneficiario.el(ModalBeneficiario.CPF).val();
     const nome = ModalBeneficiario.el(ModalBeneficiario.Nome).val();
 
@@ -242,28 +294,59 @@ async function ModalBeneficiarios(titulo, beneficiarios) {
       return;
     }
 
-    const beneficiario = {
+    return {
       CPF: cpf,
       Nome: nome,
     };
+  };
 
-    if (beneficiarios.find((b) => b.CPF == cpf)) {
+  function onAddBeneficiario(e) {
+    e.preventDefault();
+
+    const data = getFormData();
+
+    if (!data) return;
+
+    const beneficiario = {
+      ...data,
+      Id: new Date().getTime().toString(),
+    };
+
+    if (beneficiarios.find((b) => b.CPF == beneficiario.CPF)) {
       alert("CPF já adicionado.");
       return;
     }
 
-    ModalBeneficiario.el(ModalBeneficiario.CPF).val("");
-    ModalBeneficiario.el(ModalBeneficiario.Nome).val("");
+    limparFormulario();
 
     beneficiarios.push(beneficiario);
-    adicionaBeneficiario(cpf, nome);
+    adicionaBeneficiario(beneficiario.Id, beneficiario.CPF, beneficiario.Nome);
   }
 
+  function adicionaBeneficiario(id, cpf, nome) {
+    const linha = `
+            <tr id="beneficiario-${id}">
+                <td>${cpf}</td>
+                <td>${nome}</td>
+                <td>
+                    <button type="button" class="btn btn-primary btn-sm" data="${id}" id="btnAlterarBeneficiario">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </button>
+
+                    <button type="button" class="btn btn-danger btn-sm" data="${id}" id="btnRemoveBeneficiario">
+                       <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                </td>
+            </tr>
+        `;
+
+    ModalBeneficiario.el(ModalBeneficiario.Grid + " tbody").append(linha);
+  }
+
+  const id = ModalBeneficiario.Id.replace("#", "").trim();
+
   const modal = `
-        <div id="${ModalBeneficiario.Id.replace(
-          "#",
-          ""
-        ).trim()}" class="modal fade">
+        <div id="${id}" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -328,24 +411,69 @@ async function ModalBeneficiarios(titulo, beneficiarios) {
     });
     const result = await promiseBeneficiarios;
 
-    ModalBeneficiario.el(ModalBeneficiario.BtnAdicionar).off("click");
-    $(ModalBeneficiario.Id).off("click", ModalBeneficiario.BtnRemover);
+    unRegisterEvents();
 
     return result;
   }
 
-  async function iniciar() {
-    $("body").append(modal);
-    $(ModalBeneficiario.Id).modal("show");
-    ModalBeneficiario.el(ModalBeneficiario.BtnAdicionar).click(
+  function unRegisterEvents() {
+    $(ModalBeneficiario.Id).off(
+      "click",
+      ModalBeneficiario.BtnAdicionar,
       onAddBeneficiario
     );
+
+    $(ModalBeneficiario.Id).off(
+      "click",
+      ModalBeneficiario.BtnAdicionar,
+      onUpdateBeneficiario
+    );
+
+    $(ModalBeneficiario.Id).off(
+      "click",
+      ModalBeneficiario.BtnAlterar,
+      onEditBeneficiario
+    );
+
+    $(ModalBeneficiario.Id).off(
+      "click",
+      ModalBeneficiario.BtnRemover,
+      onRemoveBeneficiario
+    );
+
+    ModalBeneficiario.el(ModalBeneficiario.BtnAdicionar).text("Incluir");
+
+    limparFormulario();
+  }
+
+  function registerEvents() {
+    $(ModalBeneficiario.Id).on(
+      "click",
+      ModalBeneficiario.BtnAdicionar,
+      onAddBeneficiario
+    );
+
+    $(ModalBeneficiario.Id).on(
+      "click",
+      ModalBeneficiario.BtnAlterar,
+      onEditBeneficiario
+    );
+
     $(ModalBeneficiario.Id).on(
       "click",
       ModalBeneficiario.BtnRemover,
       onRemoveBeneficiario
     );
+  }
+
+  async function iniciar() {
+    $("body").append(modal);
+    $(ModalBeneficiario.Id).modal("show");
+
+    registerEvents();
     ModalBeneficiario.el(ModalBeneficiario.CPF).mask("999.999.999-99");
+    ModalBeneficiario.el(ModalBeneficiario.BtnAdicionar).text("Incluir");
+
     return await retornarBeneficiarios();
   }
 
