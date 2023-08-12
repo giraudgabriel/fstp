@@ -53,6 +53,12 @@ namespace WebAtividadeEntrevista.Controllers
                     CPF = model.CPF,
                 });
 
+                if (model.Id == 0)
+                {
+                    Response.StatusCode = 409;
+                    return Json("Já existe um cliente com este CPF!");
+                }
+
            
                 return Json("Cadastro efetuado com sucesso");
             }
