@@ -321,12 +321,17 @@ async function ModalBeneficiarios(titulo, beneficiarios) {
     `;
 
   async function retornarBeneficiarios() {
-    const promiseRetorno = new Promise((resolve) => {
+    const promiseBeneficiarios = new Promise((resolve) => {
       $(ModalBeneficiario.Id).on("hidden.bs.modal", function () {
         resolve(beneficiarios);
       });
     });
-    return await promiseRetorno;
+    const result = await promiseBeneficiarios;
+
+    ModalBeneficiario.el(ModalBeneficiario.BtnAdicionar).off("click");
+    $(ModalBeneficiario.Id).off("click", ModalBeneficiario.BtnRemover);
+
+    return result;
   }
 
   async function iniciar() {
