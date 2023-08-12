@@ -39,13 +39,13 @@ const ModalBeneficiario = {
  * @memberOf FormCliente
  */
 const MaskCliente = {
-  [FormCliente.CPF]: "999.999.999-99",
+  [FormCliente.CPF]: CPFUtils.mask,
   [FormCliente.Telefone]: "(99) 99999-9999",
   [FormCliente.CEP]: "99999-999",
 };
 
 const MaskBeneficiario = {
-  [ModalBeneficiario.CPF]: "999.999.999-99",
+  [ModalBeneficiario.CPF]: CPFUtils.mask,
 };
 
 $(document).ready(function () {
@@ -163,31 +163,40 @@ $(document).ready(function () {
 });
 
 function ModalDialog(titulo, texto) {
-  var random = Math.random().toString().replace(".", "");
-  var texto =
-    '<div id="' +
-    random +
-    '" class="modal fade">                                                               ' +
-    '        <div class="modal-dialog">                                                                                 ' +
-    '            <div class="modal-content">                                                                            ' +
-    '                <div class="modal-header">                                                                         ' +
-    '                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>         ' +
-    '                    <h4 class="modal-title">' +
-    titulo +
-    "</h4>                                                    " +
-    "                </div>                                                                                             " +
-    '                <div class="modal-body">                                                                           ' +
-    "                    <p>" +
-    texto +
-    "</p>                                                                           " +
-    "                </div>                                                                                             " +
-    '                <div class="modal-footer">                                                                         ' +
-    '                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>             ' +
-    "                                                                                                                   " +
-    "                </div>                                                                                             " +
-    "            </div><!-- /.modal-content -->                                                                         " +
-    "  </div><!-- /.modal-dialog -->                                                                                    " +
-    "</div> <!-- /.modal -->                                                                                        ";
+  const random = Math.random().toString().replace(".", "");
+
+  const texto = `
+    <div id="${random}" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-hidden="true"
+                    >
+                        ×
+                    </button>
+                    <h4 class="modal-title">${titulo}</h4>
+                </div>
+
+                <div class="modal-body">
+                    <p>${texto}</p>
+                </div>
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-default"
+                        data-dismiss="modal"
+                    >
+                      Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
 
   $("body").append(texto);
   $("#" + random).modal("show");
@@ -204,7 +213,8 @@ async function ModalBeneficiarios(titulo, beneficiarios) {
 
     if (!beneficiario) return;
 
-    if (!confirm(`Deseja remover o beneficiário de CPF: ${beneficiario.CPF} ?`)) return;
+    if (!confirm(`Deseja remover o beneficiário de CPF: ${beneficiario.CPF} ?`))
+      return;
 
     removerBeneficiario(id);
     $(this).closest("tr").remove();
@@ -471,7 +481,7 @@ async function ModalBeneficiarios(titulo, beneficiarios) {
     $(ModalBeneficiario.Id).modal("show");
 
     registerEvents();
-    ModalBeneficiario.el(ModalBeneficiario.CPF).mask("999.999.999-99");
+    ModalBeneficiario.el(ModalBeneficiario.CPF).mask(CPFUtils.mask);
     ModalBeneficiario.el(ModalBeneficiario.BtnAdicionar).text("Incluir");
 
     return await retornarBeneficiarios();
@@ -481,6 +491,8 @@ async function ModalBeneficiarios(titulo, beneficiarios) {
 }
 
 class CPFUtils {
+  static mask = "999.999.999-99";
+
   static validarCPF(cpf) {
     cpf = cpf.replace(/[^\d]+/g, "");
     if (cpf == "") return false;
