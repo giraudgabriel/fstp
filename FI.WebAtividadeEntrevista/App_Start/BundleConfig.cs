@@ -26,12 +26,22 @@ namespace WebAtividadeEntrevista
                       "~/Scripts/jtable/jquery.jtable.min.js",
                       "~/Scripts/jtable/localization/jquery.jtable.pt-BR.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/clientes").Include(
-                      "~/Scripts/Clientes/FI.Clientes.js"));
-            bundles.Add(new ScriptBundle("~/bundles/listClientes").Include(
-                      "~/Scripts/Clientes/FI.ListClientes.js"));
-            bundles.Add(new ScriptBundle("~/bundles/altClientes").Include(
-                      "~/Scripts/Clientes/FI.AltClientes.js"));
+            var bundleCliente = new ScriptBundle("~/bundles/clientes")
+                      .IncludeDirectory("~/Scripts/Clientes/utils", "*.js")
+                      .IncludeDirectory("~/Scripts/Clientes/modal", "*.js")
+                      .Include("~/Scripts/Clientes/FI.Clientes.js");
+
+            var bundleListClientes = new ScriptBundle("~/bundles/listClientes")
+                .Include("~/Scripts/Clientes/FI.ListClientes.js");
+
+            var bundleClienteAlterar = new ScriptBundle("~/bundles/altClientes")
+                    .IncludeDirectory("~/Scripts/Clientes/utils", "*.js")
+                    .IncludeDirectory("~/Scripts/Clientes/modal", "*.js")
+                    .Include("~/Scripts/Clientes/FI.AltClientes.js");
+
+            bundles.Add(bundleCliente);
+            bundles.Add(bundleListClientes);
+            bundles.Add(bundleClienteAlterar);
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
