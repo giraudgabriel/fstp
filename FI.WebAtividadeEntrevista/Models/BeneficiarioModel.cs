@@ -31,6 +31,9 @@ namespace WebAtividadeEntrevista.Models
         [CpfValidation(ErrorMessage = "Digite um CPF válido!")]
         public string CPF { get; set; }
 
+        /// <summary>
+        /// Variavel utilizada para excluir ou não ao alterar
+        /// </summary>
         public bool? ShouldDelete { get; set; } = false;
 
     }

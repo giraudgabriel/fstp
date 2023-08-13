@@ -40,7 +40,11 @@ namespace FI.AtividadeEntrevista.DAL
             return ret;
         }
 
-        
+        /// <summary>
+        /// Consultar Cliente pelo Id
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
         internal Cliente Consultar(long Id)
         {
             List<SqlParameter> parametros = new List<SqlParameter>
@@ -54,6 +58,11 @@ namespace FI.AtividadeEntrevista.DAL
             return cli.FirstOrDefault();
         }
 
+        /// <summary>
+        /// Verificar a existencia de um CPF
+        /// </summary>
+        /// <param name="CPF"></param>
+        /// <returns></returns>
         internal bool VerificarExistencia(string CPF)
         {
             List<SqlParameter> parametros = new List<SqlParameter>
@@ -66,6 +75,15 @@ namespace FI.AtividadeEntrevista.DAL
             return ds.Tables[0].Rows.Count > 0;
         }
 
+        /// <summary>
+        /// Pesquisa detalhada de Clientes
+        /// </summary>
+        /// <param name="iniciarEm"></param>
+        /// <param name="quantidade"></param>
+        /// <param name="campoOrdenacao"></param>
+        /// <param name="crescente"></param>
+        /// <param name="qtd"></param>
+        /// <returns></returns>
         internal List<Cliente> Pesquisa(int iniciarEm, int quantidade, string campoOrdenacao, bool crescente, out int qtd)
         {
             List<SqlParameter> parametros = new List<SqlParameter>

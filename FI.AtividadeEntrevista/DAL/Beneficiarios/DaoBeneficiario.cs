@@ -52,6 +52,10 @@ namespace FI.AtividadeEntrevista.DAL
             return beneficiarios;
         }
 
+        /// <summary>
+        /// Excluir beneficiario pelo Id
+        /// </summary>
+        /// <param name="id"></param>
         internal void Excluir(long id)
         {
             var parametros = new List<SqlParameter>
@@ -78,6 +82,11 @@ namespace FI.AtividadeEntrevista.DAL
             Executar(BeneficiarioProcedureEnum.Alterar, parametros);
         }
         
+        /// <summary>
+        /// Converte um dataset para o formato de Beneficiario
+        /// </summary>
+        /// <param name="ds"></param>
+        /// <returns></returns>
         private static IEnumerable<Beneficiario> Converter(DataSet ds)
         {
             var lista = new List<Beneficiario>();
