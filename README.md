@@ -28,7 +28,7 @@
 
 >> ## Área de Beneficiários
 
-  - 2 - Na tela de cadastramento/alteração de clientes, incluir um novo botão denominado Beneficiários, que permitirá o cadastramento de Beneficiários do cliente, o mesmo deve abrir um pop-up para inclusão do CPF e Nome do beneficiário, além disso deve existir um grid onde será exibido os beneficiários que já foram inclusos, no mesmo será possível realizar a manutenção dos beneficiários cadastrados,alteração e exclusão.
+- 2 - Na tela de cadastramento/alteração de clientes, incluir um novo botão denominado Beneficiários, que permitirá o cadastramento de Beneficiários do cliente, o mesmo deve abrir um pop-up para inclusão do CPF e Nome do beneficiário, além disso deve existir um grid onde será exibido os beneficiários que já foram inclusos, no mesmo será possível realizar a manutenção dos beneficiários cadastrados,alteração e exclusão.
 
   ### Pontos relevantes:
   - [x] O novo botão e novos campos deverão seguir o padrão visual dos demais botões e campos da
