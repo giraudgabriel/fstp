@@ -9,6 +9,7 @@
         public static string Incluir = "FI_SP_IncBeneficiario";
         public static string Excluir = "FI_SP_DelBeneficiario";
         public static string Pesquisar = "FI_SP_PesqBeneficiario";
+        public static string BuscarPorCliente = "FI_SP_BuscarBeneficiarioPorCliente";
         public static string ExisteCPF = "FI_SP_VerificaBeneficiario";
     }
 }

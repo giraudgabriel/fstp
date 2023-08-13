@@ -26,7 +26,8 @@ namespace WebAtividadeEntrevista.Controllers
         public JsonResult Incluir(ClienteModel model)
         {
             BoCliente bo = new BoCliente();
-            
+            BoBeneficiario boBeneficiario = new BoBeneficiario();
+
             if (!ModelState.IsValid)
             {
                 List<string> erros = (from item in ModelState.Values
@@ -59,7 +60,33 @@ namespace WebAtividadeEntrevista.Controllers
                     return Json("Já existe um cliente com este CPF!");
                 }
 
-           
+
+                if (model.Beneficiarios != null && model.Beneficiarios.Count > 0)
+                {
+                    var beneficiarios = model.Beneficiarios.Select(x => new Beneficiario
+                    {
+                        CPF = x.CPF,
+                        IdCliente = model.Id,
+                        Nome = x.Nome,
+                        Id = 0,
+                    }).ToList();
+
+                    var resultBeneficiario = boBeneficiario.Incluir(beneficiarios);
+
+                    if (resultBeneficiario.Any(x => x.Value == 0))
+                    {
+                        List<string> erros = (from item in resultBeneficiario.Keys
+                                              select $"Falha ao salvar beneficiário de CPF: {item}!")
+                                              .ToList();
+
+                        Response.StatusCode = 400;
+                        return Json(string.Join(Environment.NewLine, erros));
+                    }
+
+                }
+
+
+
                 return Json("Cadastro efetuado com sucesso");
             }
         }
@@ -102,11 +129,16 @@ namespace WebAtividadeEntrevista.Controllers
         public ActionResult Alterar(long id)
         {
             BoCliente bo = new BoCliente();
+            BoBeneficiario boBeneficiario = new BoBeneficiario();
+
             Cliente cliente = bo.Consultar(id);
             Models.ClienteModel model = null;
 
             if (cliente != null)
             {
+                var beneficiarios = boBeneficiario.ConsultarPorCliente(cliente.Id);
+
+
                 model = new ClienteModel()
                 {
                     Id = cliente.Id,
@@ -120,9 +152,13 @@ namespace WebAtividadeEntrevista.Controllers
                     Sobrenome = cliente.Sobrenome,
                     Telefone = cliente.Telefone,
                     CPF = cliente.CPF,
+                    Beneficiarios = beneficiarios.Select(x => new BeneficiarioModel
+                    {
+                        Id = x.Id,
+                        CPF = x.CPF,
+                        Nome = x.Nome,
+                    }).ToList(),
                 };
-
-            
             }
 
             return View(model);

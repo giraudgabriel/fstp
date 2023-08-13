@@ -1,73 +1,102 @@
 ﻿$(document).ready(function () {
-  //Mascara cpf para o campo CPF
-  $("#formCadastro #CPF").mask("999.999.999-99");
-  //Mascara telefone para o campo Telefone
-  $("#formCadastro #Telefone").mask("(99) 99999-9999");
-  //Mascara CEP para o campo CEP
-  $("#formCadastro #CEP").mask("99999-999");
-  //Validação do campo CEP
-  $("#formCadastro #CEP").blur(function () {
-    const cep = $("#CEP").val();
-    const filtro = /^\d{5}-\d{3}$/i;
-    if (!filtro.test(cep)) {
-      alert("CEP inválido!");
-      $("#CEP").focus();
-      $("#CEP").val("");
-      return false;
-    }
+  var vm = this;
+  vm.beneficiarios = []; // Lista de beneficiários
 
-    if (cep == "") return false;
+  /**
+   * Formulário de cadastro de clientes
+   */
+  const FormCliente = {
+    Id: "#formCadastro",
+    Nome: "#Nome",
+    Sobrenome: "#Sobrenome",
+    Email: "#Email",
+    Nacionalidade: "#Nacionalidade",
+    Estado: "#Estado",
+    Cidade: "#Cidade",
+    Logradouro: "#Logradouro",
+    Telefone: "#Telefone",
+    CPF: "#CPF",
+    CEP: "#CEP",
+    btnBeneficiarios: "#btnBeneficiarios",
+    el: (id) => $(`${FormCliente.Id} ${id}`),
+  };
 
-    if (cep == obj.CEP) return false;
+  /**
+   * Mascaras dos campos do formulário de clientes
+   * @type {{CPF: string, Telefone: string, CEP: string}}
+   * @const
+   * @enum {string}
+   * @memberOf FormCliente
+   */
+  const MaskCliente = {
+    [FormCliente.CPF]: CPFUtils.mask,
+    [FormCliente.Telefone]: "(99) 99999-9999",
+    [FormCliente.CEP]: "99999-999",
+  };
 
-    $.getJSON("https://viacep.com.br/ws/" + cep + "/json/", function (dados) {
-      if (!("erro" in dados)) {
-        if (dados.logradouro != "") {
-          $("#formCadastro #Logradouro").val(dados.logradouro);
-        }
-        if (dados.localidade != "") {
-          $("#formCadastro #Cidade").val(dados.localidade);
-        }
-        $("#formCadastro #Estado").val(dados.uf);
-      } else {
-        alert("CEP não encontrado.");
-        $("#CEP").val("");
-      }
+  function iniciarMascaras() {
+    // Adiciona as máscaras aos campos
+    Object.keys(MaskCliente).forEach((key) => {
+      FormCliente.el(key).mask(MaskCliente[key]);
     });
-  });
-
-  if (obj) {
-    $("#formCadastro #Nome").val(obj.Nome);
-    $("#formCadastro #CEP").val(obj.CEP);
-    $("#formCadastro #Email").val(obj.Email);
-    $("#formCadastro #Sobrenome").val(obj.Sobrenome);
-    $("#formCadastro #Nacionalidade").val(obj.Nacionalidade);
-    $("#formCadastro #Estado").val(obj.Estado);
-    $("#formCadastro #Cidade").val(obj.Cidade);
-    $("#formCadastro #Logradouro").val(obj.Logradouro);
-    $("#formCadastro #Telefone").val(obj.Telefone);
-    $("#formCadastro #CPF").val(obj.CPF);
-    $("#formCadastro #CPF").attr("readonly", true);
   }
 
-  $("#formCadastro").submit(function (e) {
+  async function onOpenModalBeneficiarios(e) {
+    e.preventDefault();
+    // Abre o modal e espera o retorno dos beneficiários
+    vm.beneficiarios = await ModalBeneficiarios(
+      "Beneficiários",
+      vm.beneficiarios
+    );
+  }
+
+  function getFormData() {
+    return {
+      NOME: $(FormCliente.Nome).val(),
+      CEP: $(FormCliente.CEP).val(),
+      Email: $(FormCliente.Email).val(),
+      Sobrenome: $(FormCliente.Sobrenome).val(),
+      Nacionalidade: $(FormCliente.Nacionalidade).val(),
+      Estado: $(FormCliente.Estado).val(),
+      Cidade: $(FormCliente.Cidade).val(),
+      Logradouro: $(FormCliente.Logradouro).val(),
+      Telefone: $(FormCliente.Telefone).val(),
+      CPF: $(FormCliente.CPF).val(),
+      Beneficiarios: vm.beneficiarios.map((b) => ({
+        CPF: b.CPF,
+        Nome: b.Nome,
+        Id: 0,
+      })),
+    };
+  }
+
+  function limparFormulario() {
+    $(FormCliente.Id)[0].reset();
+    vm.beneficiarios = [];
+  }
+
+  if (obj) {
+    FormCliente.el(FormCliente.Nome).val(obj.Nome);
+    FormCliente.el(FormCliente.CEP).val(obj.CEP);
+    FormCliente.el(FormCliente.Email).val(obj.Email);
+    FormCliente.el(FormCliente.Sobrenome).val(obj.Sobrenome);
+    FormCliente.el(FormCliente.Nacionalidade).val(obj.Nacionalidade);
+    FormCliente.el(FormCliente.Estado).val(obj.Estado);
+    FormCliente.el(FormCliente.Cidade).val(obj.Cidade);
+    FormCliente.el(FormCliente.Logradouro).val(obj.Logradouro);
+    FormCliente.el(FormCliente.Telefone).val(obj.Telefone);
+    FormCliente.el(FormCliente.CPF).val(obj.CPF);
+    FormCliente.el(FormCliente.CPF).attr("readonly", true);
+    vm.beneficiarios = obj?.Beneficiarios ?? [];
+  }
+
+  function atualizarCliente(e) {
     e.preventDefault();
 
     $.ajax({
       url: urlPost,
       method: "POST",
-      data: {
-        NOME: $(this).find("#Nome").val(),
-        CEP: $(this).find("#CEP").val(),
-        Email: $(this).find("#Email").val(),
-        Sobrenome: $(this).find("#Sobrenome").val(),
-        Nacionalidade: $(this).find("#Nacionalidade").val(),
-        Estado: $(this).find("#Estado").val(),
-        Cidade: $(this).find("#Cidade").val(),
-        Logradouro: $(this).find("#Logradouro").val(),
-        Telefone: $(this).find("#Telefone").val(),
-        CPF: $(this).find("#CPF").val(),
-      },
+      data: getFormData(),
       error: function (r) {
         if (r.status == 400) ModalDialog("Ocorreu um erro", r.responseJSON);
         else if (r.status == 500)
@@ -78,9 +107,49 @@
       },
       success: function (r) {
         ModalDialog("Sucesso!", r);
-        $("#formCadastro")[0].reset();
+        limparFormulario();
         window.location.href = urlRetorno;
       },
     });
-  });
+  }
+
+  /**
+   *  Identifica o CEP e preenche os campos de endereço
+   * @returns
+   */
+  function identificarCEP() {
+    const cep = $(FormCliente.CEP).val();
+    const filtro = /^\d{5}-\d{3}$/i;
+    if (!filtro.test(cep)) {
+      alert("CEP inválido!");
+      $(FormCliente.CEP).focus();
+      $(FormCliente.CEP).val("");
+      return false;
+    }
+
+    $.getJSON("https://viacep.com.br/ws/" + cep + "/json/", function (dados) {
+      if (!("erro" in dados)) {
+        FormCliente.el(FormCliente.Logradouro).val(dados.logradouro);
+        FormCliente.el(FormCliente.Cidade).val(dados.localidade);
+        FormCliente.el(FormCliente.Estado).val(dados.uf);
+      } else {
+        alert("CEP não encontrado.");
+        $(FormCliente.CEP).val("");
+      }
+    });
+  }
+
+  /**
+   * Inicia o formulário
+   */
+  function iniciar() {
+    iniciarMascaras();
+    $(FormCliente.Id).submit(atualizarCliente.bind(this));
+    FormCliente.el(FormCliente.CEP).blur(identificarCEP);
+    FormCliente.el(FormCliente.btnBeneficiarios).click(
+      onOpenModalBeneficiarios.bind(this)
+    );
+  }
+
+  iniciar();
 });

@@ -40,10 +40,7 @@ namespace FI.AtividadeEntrevista.DAL
             return ret;
         }
 
-        /// <summary>
-        /// Inclui um novo cliente
-        /// </summary>
-        /// <param name="cliente">Objeto de cliente</param>
+        
         internal Cliente Consultar(long Id)
         {
             List<SqlParameter> parametros = new List<SqlParameter>
@@ -109,7 +106,7 @@ namespace FI.AtividadeEntrevista.DAL
         }
 
         /// <summary>
-        /// Inclui um novo cliente
+        /// Altera um cliente
         /// </summary>
         /// <param name="cliente">Objeto de cliente</param>
         internal void Alterar(DML.Cliente cliente)

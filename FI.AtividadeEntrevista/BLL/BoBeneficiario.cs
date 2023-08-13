@@ -12,18 +12,23 @@ namespace FI.AtividadeEntrevista.BLL
         /// Inclui um novo beneficiario
         /// </summary>
         /// <param name="beneficiario">Objeto de Beneficiario</param>
-        public bool Incluir(List<DML.Beneficiario> beneficiarios)
+        public Dictionary<string, long> Incluir(List<DML.Beneficiario> beneficiarios)
         {
             DAL.DaoBeneficiario ben = new DAL.DaoBeneficiario();
 
+            var results = new Dictionary<string, long>();
+
             foreach (var beneficiario in beneficiarios)
-            {
-                //if (ben.VerificarExistencia(beneficiario.CPF)) return 0;
+                results.Add(beneficiario.CPF, ben.Incluir(beneficiario));
 
-                //return ben.Incluir(beneficiario);
-            }
+            return results;
+        }
 
-            return true;
+        public List<DML.Beneficiario> ConsultarPorCliente(long id)
+        {
+            DAL.DaoBeneficiario ben = new DAL.DaoBeneficiario();
+
+            return ben.BuscarPorCliente(id);
         }
     }
 }

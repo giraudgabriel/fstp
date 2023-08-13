@@ -5,7 +5,8 @@
  * @param {{ CPF: string; Nome: string; Id: number | string;} [] } beneficiarios 
  * @returns  { CPF: string; Nome: string; Id: number | string;} []
  */
-async function ModalBeneficiarios(titulo, beneficiarios) {
+async function ModalBeneficiarios(titulo, beneficiariosParam) {
+  let beneficiarios = beneficiariosParam || [];
     /**
    * Modal de beneficiários (lista de beneficiários)
    */
@@ -300,6 +301,15 @@ async function ModalBeneficiarios(titulo, beneficiarios) {
     registerEvents();
     ModalBeneficiario.el(ModalBeneficiario.CPF).mask(CPFUtils.mask);
     ModalBeneficiario.el(ModalBeneficiario.BtnAdicionar).text("Incluir");
+    
+    beneficiarios = beneficiariosParam || [];
+
+    ModalBeneficiario.el(ModalBeneficiario.Grid + " tbody").empty();
+
+    beneficiarios.forEach((b) => {
+      adicionaBeneficiario(b.Id, b.CPF, b.Nome);
+    });
+
 
     return await retornarBeneficiarios();
   }
