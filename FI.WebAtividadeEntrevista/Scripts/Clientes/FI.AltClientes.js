@@ -4,7 +4,6 @@
 
   vm.backupBeneficiarios = []; // Lista de beneficiários
 
-
   /**
    * Formulário de cadastro de clientes
    */
@@ -60,22 +59,23 @@
       Id: b.Id.toString().startsWith("new") ? 0 : b.Id,
     }));
 
-    const beneficiariosToDel = vm.backupBeneficiarios
-      ?.filter((x) => {
-        return !beneficiariosToSave.find((b) => b.Id == x.Id);
-      })
-      ?.map((x) => ({
-        CPF: x.CPF,
-        Nome: x.Nome,
-        Id: x.Id,
-        ShouldDelete: true,
-      })) ?? [];
+    const beneficiariosToDel =
+      vm.backupBeneficiarios
+        ?.filter((x) => {
+          return !beneficiariosToSave.find((b) => b.Id == x.Id);
+        })
+        ?.map((x) => ({
+          CPF: x.CPF,
+          Nome: x.Nome,
+          Id: x.Id,
+          ShouldDelete: true,
+        })) ?? [];
 
-    console.log('a', {
+    console.log("a", {
       beneficiariosToSave,
       beneficiariosToDel,
       backupBeneficiarios: vm.backupBeneficiarios,
-    })
+    });
 
     const beneficiarios = [...beneficiariosToSave, ...beneficiariosToDel];
 
@@ -147,28 +147,41 @@
    *  Identifica o CEP e preenche os campos de endereço
    * @returns
    */
-  function identificarCEP() {
+  async function identificarCEP() {
     const cep = $(FormCliente.CEP).val();
-    const filtro = /^\d{5}-\d{3}$/i;
-    if (!filtro.test(cep)) {
-      alert("CEP inválido!");
-      $(FormCliente.CEP).focus();
+
+    const info = await CEPUtils.identificar(cep);
+
+    if (!info) {
       $(FormCliente.CEP).val("");
       return false;
     }
 
-    $.getJSON("https://viacep.com.br/ws/" + cep + "/json/", function (dados) {
-      if (!("erro" in dados)) {
-        FormCliente.el(FormCliente.Logradouro).val(dados.logradouro);
-        FormCliente.el(FormCliente.Cidade).val(dados.localidade);
-        FormCliente.el(FormCliente.Estado).val(dados.uf);
-      } else {
-        alert("CEP não encontrado.");
-        $(FormCliente.CEP).val("");
-      }
-    });
+    FormCliente.el(FormCliente.Logradouro).val(info.Logradouro);
+    FormCliente.el(FormCliente.Cidade).val(info.Cidade);
+    FormCliente.el(FormCliente.Estado).val(info.Estado);
+    FormCliente.el(FormCliente.Logradouro).focus();
   }
 
+  /**
+   * Busca os estados e preenche o campo de estados
+   * @memberOf FormCliente
+   * @name buscarEstados
+   */
+  async function buscarEstados() {
+    const estados = await CEPUtils.buscarEstados();
+
+    FormCliente.el(FormCliente.Estado).empty();
+
+    estados.forEach((e) => {
+      const option = document.createElement("option");
+      option.value = e.sigla;
+      option.text = e.nome;
+      FormCliente.el(FormCliente.Estado).append(option);
+    });
+
+    FormCliente.el(FormCliente.Estado).val(clienteParaAlterar?.Estado);
+  }
   /**
    * Inicia o formulário
    */
@@ -179,6 +192,7 @@
     FormCliente.el(FormCliente.btnBeneficiarios).click(
       onOpenModalBeneficiarios.bind(this)
     );
+    buscarEstados();
   }
 
   iniciar();

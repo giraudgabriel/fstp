@@ -2,7 +2,7 @@
   var vm = this;
   vm.beneficiarios = []; // Lista de beneficiários
 
-    /**
+  /**
    * Formulário de cadastro de clientes
    */
   const FormCliente = {
@@ -20,7 +20,6 @@
     btnBeneficiarios: "#btnBeneficiarios",
     el: (id) => $(`${FormCliente.Id} ${id}`),
   };
-
 
   /**
    * Mascaras dos campos do formulário de clientes
@@ -112,40 +111,52 @@
    *  Identifica o CEP e preenche os campos de endereço
    * @returns
    */
-  function identificarCEP() {
+  async function identificarCEP() {
     const cep = $(FormCliente.CEP).val();
-    const filtro = /^\d{5}-\d{3}$/i;
-    if (!filtro.test(cep)) {
-      alert("CEP inválido!");
-      $(FormCliente.CEP).focus();
+
+    const info = await CEPUtils.identificar(cep);
+
+    if (!info) {
       $(FormCliente.CEP).val("");
       return false;
     }
 
-    $.getJSON("https://viacep.com.br/ws/" + cep + "/json/", function (dados) {
-      if (!("erro" in dados)) {
-        FormCliente.el(FormCliente.Logradouro).val(dados.logradouro);
-        FormCliente.el(FormCliente.Cidade).val(dados.localidade);
-        FormCliente.el(FormCliente.Estado).val(dados.uf);
-      } else {
-        alert("CEP não encontrado.");
-        $(FormCliente.CEP).val("");
-      }
+    FormCliente.el(FormCliente.Logradouro).val(info.Logradouro);
+    FormCliente.el(FormCliente.Cidade).val(info.Cidade);
+    FormCliente.el(FormCliente.Estado).val(info.Estado);
+    FormCliente.el(FormCliente.Logradouro).focus();
+  }
+
+  /**
+   * Busca os estados e preenche o campo de estados
+   * @memberOf FormCliente
+   * @name buscarEstados
+   */
+  async function buscarEstados() {
+    const estados = await CEPUtils.buscarEstados();
+
+    FormCliente.el(FormCliente.Estado).empty();
+
+    estados.forEach((e) => {
+      const option = document.createElement("option");
+      option.value = e.sigla;
+      option.text = e.nome;
+      FormCliente.el(FormCliente.Estado).append(option);
     });
   }
 
   /**
    * Inicia o formulário
    */
-  function iniciar() {
+  async function iniciar() {
     iniciarMascaras();
     $(FormCliente.Id).submit(cadastrarCliente.bind(this));
     FormCliente.el(FormCliente.CEP).blur(identificarCEP);
     FormCliente.el(FormCliente.btnBeneficiarios).click(
       onOpenModalBeneficiarios.bind(this)
     );
+    buscarEstados();
   }
 
   iniciar();
 });
-
