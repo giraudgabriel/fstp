@@ -1,9 +1,7 @@
 ﻿using FI.AtividadeEntrevista.BLL;
 using WebAtividadeEntrevista.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using FI.AtividadeEntrevista.DML;
 
@@ -16,12 +14,16 @@ namespace WebAtividadeEntrevista.Controllers
             return View();
         }
 
-
         public ActionResult Incluir()
         {
             return View();
         }
 
+        /// <summary>
+        /// Incluir um cliente no banco de dados com ou sem beneficiários
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult Incluir(ClienteModel model)
         {
@@ -84,6 +86,11 @@ namespace WebAtividadeEntrevista.Controllers
             return Json("Cadastro efetuado com sucesso");
         }
 
+        /// <summary>
+        /// Alterar um cliente no banco de dados, adicionando, alterando ou excluindo beneficiários
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult Alterar(ClienteModel model)
         {
@@ -153,6 +160,12 @@ namespace WebAtividadeEntrevista.Controllers
             return Json("Cadastro alterado com sucesso");
         }
 
+        /// <summary>
+        /// Buscar um cliente para alterar pelo Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// 
         [HttpGet]
         public ActionResult Alterar(long id)
         {
@@ -190,6 +203,13 @@ namespace WebAtividadeEntrevista.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Listagem personalizada de clientes
+        /// </summary>
+        /// <param name="jtStartIndex"></param>
+        /// <param name="jtPageSize"></param>
+        /// <param name="jtSorting"></param>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult ClienteList(int jtStartIndex = 0, int jtPageSize = 0, string jtSorting = null)
         {
