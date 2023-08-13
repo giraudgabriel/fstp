@@ -114,36 +114,41 @@ namespace WebAtividadeEntrevista.Controllers
                 Telefone = model.Telefone
             });
 
-            //beneficiarios para adicionar
-            var beneficiariosParaAdicionar = model.Beneficiarios
-                .Where(x => x.Id == 0)
-                .Select(x => new Beneficiario
-                {
-                    Id = 0,
-                    IdCliente = model.Id,
-                    Nome = x.Nome,
-                    CPF = x.CPF,
-                }).ToList();
-            
-            //beneficiarios para atualizar
-            var beneficiariosParaAtualizar = model.Beneficiarios
-                .Where(x => x.Id > 0)
-                .Select(x => new Beneficiario
-                {
-                    Id = x.Id,
-                    IdCliente = model.Id,
-                    Nome = x.Nome,
-                    CPF = x.CPF,
-                }).ToList();
 
-            //beneficiarios para excluir
-            var beneficiariosParaExcluir = model.Beneficiarios
-                .Where(x => x.ShouldDelete == true)
-                .Select(x => x.Id).ToList();
+            if (model.Beneficiarios != null)
+            {
+                //beneficiarios para adicionar
+                var beneficiariosParaAdicionar = model.Beneficiarios
+                    .Where(x => x.Id == 0)
+                    .Select(x => new Beneficiario
+                    {
+                        Id = 0,
+                        IdCliente = model.Id,
+                        Nome = x.Nome,
+                        CPF = x.CPF,
+                    }).ToList();
 
-            boBeneficiario.Incluir(beneficiariosParaAdicionar);
-            boBeneficiario.Alterar(beneficiariosParaAtualizar);
-            boBeneficiario.Excluir(beneficiariosParaExcluir);
+                //beneficiarios para atualizar
+                var beneficiariosParaAtualizar = model.Beneficiarios
+                    .Where(x => x.Id > 0)
+                    .Select(x => new Beneficiario
+                    {
+                        Id = x.Id,
+                        IdCliente = model.Id,
+                        Nome = x.Nome,
+                        CPF = x.CPF,
+                    }).ToList();
+
+                //beneficiarios para excluir
+                var beneficiariosParaExcluir = model.Beneficiarios
+                    .Where(x => x.ShouldDelete == true)
+                    .Select(x => x.Id).ToList();
+
+                boBeneficiario.Incluir(beneficiariosParaAdicionar);
+                boBeneficiario.Alterar(beneficiariosParaAtualizar);
+                boBeneficiario.Excluir(beneficiariosParaExcluir);
+            }
+           
 
             return Json("Cadastro alterado com sucesso");
         }

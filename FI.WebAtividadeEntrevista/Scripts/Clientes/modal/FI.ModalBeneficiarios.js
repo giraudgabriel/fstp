@@ -204,7 +204,7 @@ async function ModalBeneficiarios(titulo, beneficiariosParam) {
                             </div>
                         </div>
 
-                        <div class="row">
+                        <div class="row table-responsive">
                           <div class="col-sm-12">
                             <table class="table table-hover" id="gridBeneficiarios">
                               <thead>
