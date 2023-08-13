@@ -58,7 +58,6 @@ namespace FI.AtividadeEntrevista.DAL
             SqlDataAdapter adapter = new SqlDataAdapter(comando);
             DataSet ds = new DataSet();
             conexao.Open();
-
             try
             {               
                 adapter.Fill(ds);
