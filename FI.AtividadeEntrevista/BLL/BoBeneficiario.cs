@@ -40,5 +40,15 @@ namespace FI.AtividadeEntrevista.BLL
 
             return ben.BuscarPorCliente(id);
         }
+
+        public void Excluir(List<long> beneficiariosParaExcluir)
+        {
+            var ben = new DAL.DaoBeneficiario();
+
+            foreach (var id in beneficiariosParaExcluir)
+            {
+                ben.Excluir(id);
+            }
+        }
     }
 }

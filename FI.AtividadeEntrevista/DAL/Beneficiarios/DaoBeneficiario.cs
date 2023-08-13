@@ -52,6 +52,16 @@ namespace FI.AtividadeEntrevista.DAL
             return beneficiarios;
         }
 
+        internal void Excluir(long id)
+        {
+            var parametros = new List<SqlParameter>
+            {
+                new SqlParameter("Id", id),
+            };
+
+            Executar(BeneficiarioProcedureEnum.Excluir, parametros);
+        }
+
         /// <summary>
         /// Altera um beneficiario
         /// </summary>

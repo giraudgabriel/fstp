@@ -135,9 +135,15 @@ namespace WebAtividadeEntrevista.Controllers
                     Nome = x.Nome,
                     CPF = x.CPF,
                 }).ToList();
-            
+
+            //beneficiarios para excluir
+            var beneficiariosParaExcluir = model.Beneficiarios
+                .Where(x => x.ShouldDelete == true)
+                .Select(x => x.Id).ToList();
+
             boBeneficiario.Incluir(beneficiariosParaAdicionar);
             boBeneficiario.Alterar(beneficiariosParaAtualizar);
+            boBeneficiario.Excluir(beneficiariosParaExcluir);
 
             return Json("Cadastro alterado com sucesso");
         }

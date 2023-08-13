@@ -81,6 +81,5 @@ namespace WebAtividadeEntrevista.Models
         /// </summary>
         [BeneficiarioValidation(ErrorMessage = "Foram encontrados beneficiários com mesmo CPF!")]
         public List<BeneficiarioModel> Beneficiarios { get; set; }
-
     }    
 }

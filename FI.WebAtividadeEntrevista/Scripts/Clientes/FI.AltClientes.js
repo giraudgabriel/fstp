@@ -2,6 +2,9 @@
   var vm = this;
   vm.beneficiarios = []; // Lista de beneficiários
 
+  vm.backupBeneficiarios = []; // Lista de beneficiários
+
+
   /**
    * Formulário de cadastro de clientes
    */
@@ -51,6 +54,31 @@
   }
 
   function getFormData() {
+    const beneficiariosToSave = vm.beneficiarios.map((b) => ({
+      CPF: b.CPF,
+      Nome: b.Nome,
+      Id: b.Id.toString().startsWith("new") ? 0 : b.Id,
+    }));
+
+    const beneficiariosToDel = vm.backupBeneficiarios
+      ?.filter((x) => {
+        return !beneficiariosToSave.find((b) => b.Id == x.Id);
+      })
+      ?.map((x) => ({
+        CPF: x.CPF,
+        Nome: x.Nome,
+        Id: x.Id,
+        ShouldDelete: true,
+      })) ?? [];
+
+    console.log('a', {
+      beneficiariosToSave,
+      beneficiariosToDel,
+      backupBeneficiarios: vm.backupBeneficiarios,
+    })
+
+    const beneficiarios = [...beneficiariosToSave, ...beneficiariosToDel];
+
     return {
       NOME: $(FormCliente.Nome).val(),
       CEP: $(FormCliente.CEP).val(),
@@ -62,11 +90,7 @@
       Logradouro: $(FormCliente.Logradouro).val(),
       Telefone: $(FormCliente.Telefone).val(),
       CPF: $(FormCliente.CPF).val(),
-      Beneficiarios: vm.beneficiarios.map((b) => ({
-        CPF: b.CPF,
-        Nome: b.Nome,
-        Id: b.Id?.toString().includes('new') ? 0 : b.Id,
-      })),
+      Beneficiarios: beneficiarios,
     };
   }
 
@@ -75,19 +99,25 @@
     vm.beneficiarios = [];
   }
 
-  if (obj) {
-    FormCliente.el(FormCliente.Nome).val(obj.Nome);
-    FormCliente.el(FormCliente.CEP).val(obj.CEP);
-    FormCliente.el(FormCliente.Email).val(obj.Email);
-    FormCliente.el(FormCliente.Sobrenome).val(obj.Sobrenome);
-    FormCliente.el(FormCliente.Nacionalidade).val(obj.Nacionalidade);
-    FormCliente.el(FormCliente.Estado).val(obj.Estado);
-    FormCliente.el(FormCliente.Cidade).val(obj.Cidade);
-    FormCliente.el(FormCliente.Logradouro).val(obj.Logradouro);
-    FormCliente.el(FormCliente.Telefone).val(obj.Telefone);
-    FormCliente.el(FormCliente.CPF).val(obj.CPF);
+  if (clienteParaAlterar) {
+    FormCliente.el(FormCliente.Nome).val(clienteParaAlterar.Nome);
+    FormCliente.el(FormCliente.CEP).val(clienteParaAlterar.CEP);
+    FormCliente.el(FormCliente.Email).val(clienteParaAlterar.Email);
+    FormCliente.el(FormCliente.Sobrenome).val(clienteParaAlterar.Sobrenome);
+    FormCliente.el(FormCliente.Nacionalidade).val(
+      clienteParaAlterar.Nacionalidade
+    );
+    FormCliente.el(FormCliente.Estado).val(clienteParaAlterar.Estado);
+    FormCliente.el(FormCliente.Cidade).val(clienteParaAlterar.Cidade);
+    FormCliente.el(FormCliente.Logradouro).val(clienteParaAlterar.Logradouro);
+    FormCliente.el(FormCliente.Telefone).val(clienteParaAlterar.Telefone);
+    FormCliente.el(FormCliente.CPF).val(clienteParaAlterar.CPF);
     FormCliente.el(FormCliente.CPF).attr("readonly", true);
-    vm.beneficiarios = obj?.Beneficiarios ?? [];
+
+    const beneficiarios = clienteParaAlterar?.Beneficiarios ?? [];
+
+    vm.beneficiarios = [...beneficiarios];
+    vm.backupBeneficiarios = [...beneficiarios];
   }
 
   function atualizarCliente(e) {
