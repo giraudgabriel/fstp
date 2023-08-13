@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FI.AtividadeEntrevista.DAL.Beneficiarios
+namespace FI.AtividadeEntrevista.DAL
 {
     /// <summary>
     /// Classe de acesso a dados de Beneficiario

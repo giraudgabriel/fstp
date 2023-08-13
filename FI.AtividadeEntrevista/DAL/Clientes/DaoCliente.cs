@@ -153,7 +153,7 @@ namespace FI.AtividadeEntrevista.DAL
             {
                 foreach (DataRow row in ds.Tables[0].Rows)
                 {
-                    Cliente cli = new Cliente
+                    Cliente cli = new Cliente()
                     {
                         Id = row.Field<long>("Id"),
                         CEP = row.Field<string>("CEP"),
