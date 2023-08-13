@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
+using WebAtividadeEntrevista.Attributes;
 
 namespace WebAtividadeEntrevista.Models
 {
@@ -78,6 +79,7 @@ namespace WebAtividadeEntrevista.Models
         /// <summary>
         /// Lista de Beneficiarios
         /// </summary>
+        [BeneficiarioValidation(ErrorMessage = "Foram encontrados beneficiários com mesmo CPF!")]
         public List<BeneficiarioModel> Beneficiarios { get; set; }
 
     }    

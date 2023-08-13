@@ -25,141 +25,156 @@ namespace WebAtividadeEntrevista.Controllers
         [HttpPost]
         public JsonResult Incluir(ClienteModel model)
         {
-            BoCliente bo = new BoCliente();
-            BoBeneficiario boBeneficiario = new BoBeneficiario();
+            var bo = new BoCliente();
+            var boBeneficiario = new BoBeneficiario();
 
             if (!ModelState.IsValid)
             {
-                List<string> erros = (from item in ModelState.Values
-                                      from error in item.Errors
-                                      select error.ErrorMessage).ToList();
+                var erros = (from item in ModelState.Values
+                    from error in item.Errors
+                    select error.ErrorMessage).ToList();
 
                 Response.StatusCode = 400;
                 return Json(string.Join(Environment.NewLine, erros));
             }
-            else
+
+            model.Id = bo.Incluir(new Cliente
             {
-                
-                model.Id = bo.Incluir(new Cliente()
-                {                    
-                    CEP = model.CEP,
-                    Cidade = model.Cidade,
-                    Email = model.Email,
-                    Estado = model.Estado,
-                    Logradouro = model.Logradouro,
-                    Nacionalidade = model.Nacionalidade,
-                    Nome = model.Nome,
-                    Sobrenome = model.Sobrenome,
-                    Telefone = model.Telefone,
-                    CPF = model.CPF,
-                });
+                CEP = model.CEP,
+                Cidade = model.Cidade,
+                Email = model.Email,
+                Estado = model.Estado,
+                Logradouro = model.Logradouro,
+                Nacionalidade = model.Nacionalidade,
+                Nome = model.Nome,
+                Sobrenome = model.Sobrenome,
+                Telefone = model.Telefone,
+                CPF = model.CPF,
+            });
 
-                if (model.Id == 0)
-                {
-                    Response.StatusCode = 409;
-                    return Json("Já existe um cliente com este CPF!");
-                }
-
-
-                if (model.Beneficiarios != null && model.Beneficiarios.Count > 0)
-                {
-                    var beneficiarios = model.Beneficiarios.Select(x => new Beneficiario
-                    {
-                        CPF = x.CPF,
-                        IdCliente = model.Id,
-                        Nome = x.Nome,
-                        Id = 0,
-                    }).ToList();
-
-                    var resultBeneficiario = boBeneficiario.Incluir(beneficiarios);
-
-                    if (resultBeneficiario.Any(x => x.Value == 0))
-                    {
-                        List<string> erros = (from item in resultBeneficiario.Keys
-                                              select $"Falha ao salvar beneficiário de CPF: {item}!")
-                                              .ToList();
-
-                        Response.StatusCode = 400;
-                        return Json(string.Join(Environment.NewLine, erros));
-                    }
-
-                }
-
-
-
-                return Json("Cadastro efetuado com sucesso");
+            if (model.Id == 0)
+            {
+                Response.StatusCode = 409;
+                return Json("Já existe um cliente com este CPF!");
             }
+
+
+            if (model.Beneficiarios == null || model.Beneficiarios.Count <= 0)
+                return Json("Cadastro efetuado com sucesso");
+            
+            var beneficiarios = model.Beneficiarios.Select(x => new Beneficiario
+            {
+                CPF = x.CPF,
+                IdCliente = model.Id,
+                Nome = x.Nome,
+                Id = 0,
+            }).ToList();
+
+            var resultBeneficiario = boBeneficiario.Incluir(beneficiarios);
+
+            if (resultBeneficiario.Any(x => x.Value == 0))
+            {
+                var erros = (from item in resultBeneficiario.Keys
+                        select $"Falha ao salvar beneficiário de CPF: {item}!")
+                    .ToList();
+
+                Response.StatusCode = 400;
+                return Json(string.Join(Environment.NewLine, erros));
+            }
+            return Json("Cadastro efetuado com sucesso");
         }
 
         [HttpPost]
         public JsonResult Alterar(ClienteModel model)
         {
-            BoCliente bo = new BoCliente();
-       
+            var bo = new BoCliente();
+            var boBeneficiario = new BoBeneficiario();
+
             if (!ModelState.IsValid)
             {
-                List<string> erros = (from item in ModelState.Values
-                                      from error in item.Errors
-                                      select error.ErrorMessage).ToList();
+                var erros = (from item in ModelState.Values
+                    from error in item.Errors
+                    select error.ErrorMessage).ToList();
 
                 Response.StatusCode = 400;
                 return Json(string.Join(Environment.NewLine, erros));
             }
-            else
+
+            bo.Alterar(new Cliente
             {
-                bo.Alterar(new Cliente()
+                Id = model.Id,
+                CEP = model.CEP,
+                Cidade = model.Cidade,
+                Email = model.Email,
+                Estado = model.Estado,
+                Logradouro = model.Logradouro,
+                Nacionalidade = model.Nacionalidade,
+                Nome = model.Nome,
+                Sobrenome = model.Sobrenome,
+                Telefone = model.Telefone
+            });
+
+            //beneficiarios para adicionar
+            var beneficiariosParaAdicionar = model.Beneficiarios
+                .Where(x => x.Id == 0)
+                .Select(x => new Beneficiario
                 {
-                    Id = model.Id,
-                    CEP = model.CEP,
-                    Cidade = model.Cidade,
-                    Email = model.Email,
-                    Estado = model.Estado,
-                    Logradouro = model.Logradouro,
-                    Nacionalidade = model.Nacionalidade,
-                    Nome = model.Nome,
-                    Sobrenome = model.Sobrenome,
-                    Telefone = model.Telefone
-                });
-                               
-                return Json("Cadastro alterado com sucesso");
-            }
+                    Id = 0,
+                    IdCliente = model.Id,
+                    Nome = x.Nome,
+                    CPF = x.CPF,
+                }).ToList();
+            
+            //beneficiarios para atualizar
+            var beneficiariosParaAtualizar = model.Beneficiarios
+                .Where(x => x.Id > 0)
+                .Select(x => new Beneficiario
+                {
+                    Id = x.Id,
+                    IdCliente = model.Id,
+                    Nome = x.Nome,
+                    CPF = x.CPF,
+                }).ToList();
+            
+            boBeneficiario.Incluir(beneficiariosParaAdicionar);
+            boBeneficiario.Alterar(beneficiariosParaAtualizar);
+
+            return Json("Cadastro alterado com sucesso");
         }
 
         [HttpGet]
         public ActionResult Alterar(long id)
         {
-            BoCliente bo = new BoCliente();
-            BoBeneficiario boBeneficiario = new BoBeneficiario();
+            var bo = new BoCliente();
+            var boBeneficiario = new BoBeneficiario();
 
-            Cliente cliente = bo.Consultar(id);
-            Models.ClienteModel model = null;
+            var cliente = bo.Consultar(id);
 
-            if (cliente != null)
+            if (cliente == null) return View((ClienteModel) null);
+            
+            var beneficiarios = boBeneficiario.ConsultarPorCliente(cliente.Id);
+
+
+            var model = new ClienteModel
             {
-                var beneficiarios = boBeneficiario.ConsultarPorCliente(cliente.Id);
-
-
-                model = new ClienteModel()
+                Id = cliente.Id,
+                CEP = cliente.CEP,
+                Cidade = cliente.Cidade,
+                Email = cliente.Email,
+                Estado = cliente.Estado,
+                Logradouro = cliente.Logradouro,
+                Nacionalidade = cliente.Nacionalidade,
+                Nome = cliente.Nome,
+                Sobrenome = cliente.Sobrenome,
+                Telefone = cliente.Telefone,
+                CPF = cliente.CPF,
+                Beneficiarios = beneficiarios.Select(x => new BeneficiarioModel
                 {
-                    Id = cliente.Id,
-                    CEP = cliente.CEP,
-                    Cidade = cliente.Cidade,
-                    Email = cliente.Email,
-                    Estado = cliente.Estado,
-                    Logradouro = cliente.Logradouro,
-                    Nacionalidade = cliente.Nacionalidade,
-                    Nome = cliente.Nome,
-                    Sobrenome = cliente.Sobrenome,
-                    Telefone = cliente.Telefone,
-                    CPF = cliente.CPF,
-                    Beneficiarios = beneficiarios.Select(x => new BeneficiarioModel
-                    {
-                        Id = x.Id,
-                        CPF = x.CPF,
-                        Nome = x.Nome,
-                    }).ToList(),
-                };
-            }
+                    Id = x.Id,
+                    CPF = x.CPF,
+                    Nome = x.Nome,
+                }).ToList(),
+            };
 
             return View(model);
         }
@@ -169,24 +184,28 @@ namespace WebAtividadeEntrevista.Controllers
         {
             try
             {
-                string campo = string.Empty;
-                string crescente = string.Empty;
-                string[] array = jtSorting.Split(' ');
+                var campo = string.Empty;
+                var crescente = string.Empty;
+                if (jtSorting != null)
+                {
+                    var array = jtSorting.Split(' ');
 
-                if (array.Length > 0)
-                    campo = array[0];
+                    if (array.Length > 0)
+                        campo = array[0];
 
-                if (array.Length > 1)
-                    crescente = array[1];
+                    if (array.Length > 1)
+                        crescente = array[1];
+                }
 
-                List<Cliente> clientes = new BoCliente().Pesquisa(jtStartIndex, jtPageSize, campo, crescente.Equals("ASC", StringComparison.InvariantCultureIgnoreCase), out int qtd);
+                var clientes = new BoCliente().Pesquisa(jtStartIndex, jtPageSize, campo,
+                    crescente.Equals("ASC", StringComparison.InvariantCultureIgnoreCase), out var qtd);
 
                 //Return result to jTable
-                return Json(new { Result = "OK", Records = clientes, TotalRecordCount = qtd });
+                return Json(new {Result = "OK", Records = clientes, TotalRecordCount = qtd});
             }
             catch (Exception ex)
             {
-                return Json(new { Result = "ERROR", ex.Message });
+                return Json(new {Result = "ERROR", ex.Message});
             }
         }
     }

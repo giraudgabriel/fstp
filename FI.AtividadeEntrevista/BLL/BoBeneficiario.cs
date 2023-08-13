@@ -3,30 +3,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FI.AtividadeEntrevista.DML;
 
 namespace FI.AtividadeEntrevista.BLL
 {
     public class BoBeneficiario
     {
         /// <summary>
-        /// Inclui um novo beneficiario
+        /// Inclui um novos beneficiarios
         /// </summary>
-        /// <param name="beneficiario">Objeto de Beneficiario</param>
-        public Dictionary<string, long> Incluir(List<DML.Beneficiario> beneficiarios)
+        /// <param name="beneficiarios"></param>
+        public Dictionary<string, long> Incluir(IEnumerable<Beneficiario> beneficiarios)
         {
-            DAL.DaoBeneficiario ben = new DAL.DaoBeneficiario();
+            var ben = new DAL.DaoBeneficiario();
 
-            var results = new Dictionary<string, long>();
+            return beneficiarios.ToDictionary(beneficiario => beneficiario.CPF, beneficiario => ben.Incluir(beneficiario));
+        }
+        
+        /// <summary>
+        /// Alterar beneficiarios
+        /// </summary>
+        /// <param name="beneficiarios"></param>
+        public void Alterar(IEnumerable<Beneficiario> beneficiarios)
+        {
+            var ben = new DAL.DaoBeneficiario();
 
             foreach (var beneficiario in beneficiarios)
-                results.Add(beneficiario.CPF, ben.Incluir(beneficiario));
-
-            return results;
+            {
+                ben.Alterar(beneficiario);
+            }
         }
 
-        public List<DML.Beneficiario> ConsultarPorCliente(long id)
+        public IEnumerable<Beneficiario> ConsultarPorCliente(long id)
         {
-            DAL.DaoBeneficiario ben = new DAL.DaoBeneficiario();
+            var ben = new DAL.DaoBeneficiario();
 
             return ben.BuscarPorCliente(id);
         }

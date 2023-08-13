@@ -15,23 +15,20 @@ namespace FI.AtividadeEntrevista.DAL
         {
             get
             {
-                ConnectionStringSettings conn = ConfigurationManager.ConnectionStrings["BancoDeDados"];
-                if (conn != null)
-                    return conn.ConnectionString;
-                else
-                    return string.Empty;
+                var conn = ConfigurationManager.ConnectionStrings["BancoDeDados"];
+                return conn != null ? conn.ConnectionString : string.Empty;
             }
         }
 
-        internal SqlConnection GetConnection()
+        private SqlConnection GetConnection()
         {
             var connection = new SqlConnection(stringDeConexao);
             return connection;
         }
 
-        internal SqlCommand ProcedureCommand(string procedure, List<SqlParameter> parametros)
+        private SqlCommand ProcedureCommand(string procedure, List<SqlParameter> parametros)
         {
-            SqlCommand comando = new SqlCommand
+            var comando = new SqlCommand
             {
                 Connection = GetConnection(),
                 CommandType = CommandType.StoredProcedure,
@@ -46,7 +43,7 @@ namespace FI.AtividadeEntrevista.DAL
 
         internal int Executar(string nomeProcedure, List<SqlParameter> parametros)
         {
-            SqlCommand comando = ProcedureCommand(nomeProcedure, parametros);
+            var comando = ProcedureCommand(nomeProcedure, parametros);
 
             using (var conexao = comando.Connection)
             {
@@ -69,10 +66,10 @@ namespace FI.AtividadeEntrevista.DAL
 
         internal DataSet Consultar(string nomeProcedure, List<SqlParameter> parametros)
         {
-            SqlCommand comando = ProcedureCommand(nomeProcedure, parametros);
+            var comando = ProcedureCommand(nomeProcedure, parametros);
 
-            SqlDataAdapter adapter = new SqlDataAdapter(comando);
-            DataSet ds = new DataSet();
+            var adapter = new SqlDataAdapter(comando);
+            var ds = new DataSet();
 
             using (var conexao = comando.Connection)
             {

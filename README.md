@@ -24,11 +24,11 @@ tela
 - [x] O campo CPF deverá possuir a formatação padrão (999.999.999-99)
 - [x] Deverá consistir se o dado informado é um CPF válido (conforme o cálculo padrão de
 verificação do dígito verificador de CPF)
-- [ ] Não permitir o cadastro de mais de um beneficiário com o mesmo CPF para o mesmo cliente
-- [ ] O beneficiário será gravado na base de dados quando for acionado o botão Salvar na tela
+- [x] Não permitir o cadastro de mais de um beneficiário com o mesmo CPF para o mesmo cliente
+- [x] O beneficiário será gravado na base de dados quando for acionado o botão Salvar na tela
 Cadastrar Cliente
 No banco de dados será necessário criar uma nova tabela, para a inclusão dos dados do beneficiário,
 ID, CPF, NOME, IDCLIENTE.
 Pontos relevantes:
-- [ ] Tabela que deverá armazenar os dados de beneficiário: “BENEFICIARIOS”
-- [ ] O novos campos deverão ser nomeados como “ID”, “CPF”, “NOME”, “IDCLIENTE”
+- [x] Tabela que deverá armazenar os dados de beneficiário: “BENEFICIARIOS”
+- [x] O novos campos deverão ser nomeados como “ID”, “CPF”, “NOME”, “IDCLIENTE”

@@ -19,16 +19,16 @@ namespace FI.AtividadeEntrevista.DAL
         /// Inclui um novo Beneficiario
         /// </summary>
         /// <param name="beneficiario">Objeto de Beneficiario</param>
-        internal long Incluir(Beneficiario beneficiario)
+        internal long Incluir(DML.Beneficiario  beneficiario)
         {
-            List<SqlParameter> parametros = new List<SqlParameter>
+            var parametros = new List<SqlParameter>
             {
                 new SqlParameter("Nome", beneficiario.Nome),
                 new SqlParameter("CPF", beneficiario.CPF),
                 new SqlParameter("IdCliente", beneficiario.IdCliente),
             };
 
-            DataSet ds = Consultar(BeneficiarioProcedureEnum.Incluir, parametros);
+            var ds = Consultar(BeneficiarioProcedureEnum.Incluir, parametros);
             long ret = 0;
             if (ds.Tables[0].Rows.Count > 0)
                 long.TryParse(ds.Tables[0].Rows[0][0].ToString(), out ret);
@@ -40,34 +40,48 @@ namespace FI.AtividadeEntrevista.DAL
         /// </summary>
         /// <param name="idCliente"></param>
         /// <returns></returns>
-        internal List<Beneficiario> BuscarPorCliente(long idCliente)
+        internal IEnumerable<Beneficiario> BuscarPorCliente(long idCliente)
         {
-            List<SqlParameter> parametros = new List<SqlParameter>
+            var parametros = new List<SqlParameter>
             {
                 new SqlParameter("Id", idCliente),
             };
 
-            DataSet ds = Consultar(BeneficiarioProcedureEnum.BuscarPorCliente, parametros);
-            List<Beneficiario> beneficiarios = Converter(ds);
+            var ds = Consultar(BeneficiarioProcedureEnum.BuscarPorCliente, parametros);
+            var beneficiarios = Converter(ds);
             return beneficiarios;
         }
 
-        private List<Beneficiario> Converter(DataSet ds)
+        /// <summary>
+        /// Altera um beneficiario
+        /// </summary>
+        /// <param name="beneficiario">Objeto de beneficiario</param>
+        internal void Alterar(DML.Beneficiario beneficiario)
         {
-            List<Beneficiario> lista = new List<DML.Beneficiario>();
-            if (ds != null && ds.Tables != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            var parametros = new List<SqlParameter>
             {
-                foreach (DataRow row in ds.Tables[0].Rows)
+                new SqlParameter("Nome", beneficiario.Nome),
+                new SqlParameter("CPF", beneficiario.CPF),
+                new SqlParameter("Id", beneficiario.Id),
+            };
+
+            Executar(BeneficiarioProcedureEnum.Alterar, parametros);
+        }
+        
+        private static IEnumerable<Beneficiario> Converter(DataSet ds)
+        {
+            var lista = new List<Beneficiario>();
+            if (ds?.Tables == null || ds.Tables.Count <= 0 || ds.Tables[0].Rows.Count <= 0) return lista;
+            foreach (DataRow row in ds.Tables[0].Rows)
+            {
+                var beneficiario = new Beneficiario
                 {
-                    Beneficiario beneficiario = new Beneficiario()
-                    {
-                        Id = row.Field<long>("ID"),
-                        CPF = row.Field<string>("CPF"),
-                        Nome = row.Field<string>("NOME"),
-                        IdCliente = row.Field<long>("IDCLIENTE")
-                    };
-                    lista.Add(beneficiario);
-                }
+                    Id = row.Field<long>("ID"),
+                    CPF = row.Field<string>("CPF"),
+                    Nome = row.Field<string>("NOME"),
+                    IdCliente = row.Field<long>("IDCLIENTE")
+                };
+                lista.Add(beneficiario);
             }
 
             return lista;

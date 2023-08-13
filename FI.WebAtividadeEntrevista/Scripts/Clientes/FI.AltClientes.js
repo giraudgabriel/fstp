@@ -65,7 +65,7 @@
       Beneficiarios: vm.beneficiarios.map((b) => ({
         CPF: b.CPF,
         Nome: b.Nome,
-        Id: 0,
+        Id: b.Id?.toString().includes('new') ? 0 : b.Id,
       })),
     };
   }

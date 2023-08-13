@@ -1,13 +1,12 @@
-
 /**
- * 
- * @param {string} titulo 
- * @param {{ CPF: string; Nome: string; Id: number | string;} [] } beneficiarios 
+ *
+ * @param {string} titulo
+ * @param {{ CPF: string; Nome: string; Id: number | string;} [] } beneficiarios
  * @returns  { CPF: string; Nome: string; Id: number | string;} []
  */
 async function ModalBeneficiarios(titulo, beneficiariosParam) {
   let beneficiarios = beneficiariosParam || [];
-    /**
+  /**
    * Modal de beneficiários (lista de beneficiários)
    */
   const ModalBeneficiario = {
@@ -137,7 +136,7 @@ async function ModalBeneficiarios(titulo, beneficiariosParam) {
 
     const beneficiario = {
       ...data,
-      Id: new Date().getTime().toString(),
+      Id: "new" + new Date().getTime().toString(),
     };
 
     if (beneficiarios.find((b) => b.CPF == beneficiario.CPF)) {
@@ -301,7 +300,7 @@ async function ModalBeneficiarios(titulo, beneficiariosParam) {
     registerEvents();
     ModalBeneficiario.el(ModalBeneficiario.CPF).mask(CPFUtils.mask);
     ModalBeneficiario.el(ModalBeneficiario.BtnAdicionar).text("Incluir");
-    
+
     beneficiarios = beneficiariosParam || [];
 
     ModalBeneficiario.el(ModalBeneficiario.Grid + " tbody").empty();
@@ -310,10 +309,8 @@ async function ModalBeneficiarios(titulo, beneficiariosParam) {
       adicionaBeneficiario(b.Id, b.CPF, b.Nome);
     });
 
-
     return await retornarBeneficiarios();
   }
 
   return await iniciar();
 }
-

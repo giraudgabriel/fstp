@@ -67,6 +67,7 @@
     <Compile Include="DAL\Clientes\DaoCliente.cs" />
     <Compile Include="DAL\Beneficiarios\Procedures\BeneficiarioProcedureEnum.cs" />
     <Compile Include="DAL\Clientes\Procedures\ClienteProcedureEnum.cs" />
+    <Content Include="DAL\Beneficiarios\Procedures\FI_SP_AltBeneficiario.sql" />
     <Content Include="DAL\Beneficiarios\Procedures\FI_SP_BuscarBeneficiarioPorCliente.sql" />
     <Content Include="DAL\Beneficiarios\Procedures\FI_SP_IncBeneficiario.sql" />
     <Content Include="DAL\Clientes\Structure\FI_SP_CreateTableBeneficiarios.sql" />
